@@ -29,4 +29,3 @@ export class Product {
   @Field()
   updatedAt: Date;
 }
-
