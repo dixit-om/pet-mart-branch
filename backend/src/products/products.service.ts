@@ -1,135 +1,104 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Product as PrismaProduct } from '@prisma/client';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Product } from './product.model';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { sampleProducts } from './products.data';
 
 @Injectable()
-export class ProductsService {
-  constructor(private prisma: PrismaService) {}
+export class ProductsService implements OnModuleInit {
+  private products: Product[] = [];
+
+  onModuleInit() {
+    // Initialize with sample products
+    this.products = sampleProducts.map((product, index) => ({
+      id: `product-${index + 1}`,
+      ...product,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+    console.log(`✅ Loaded ${this.products.length} products into memory`);
+  }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const created = await this.prisma.product.create({
-      data: {
-        name: createProductDto.name,
-        description: createProductDto.description ?? '',
-        price: createProductDto.price,
-        image: createProductDto.image ?? '',
-        stripePriceId: createProductDto.stripePriceId ?? '',
-        isFeatured: createProductDto.isFeatured ?? false,
-      },
-    });
-    
-    // Convert empty strings to null for nullable GraphQL fields
-    return {
-      ...created,
-      description: created.description === '' ? null : created.description,
-      image: created.image === '' ? null : created.image,
-      stripePriceId: created.stripePriceId === '' ? null : created.stripePriceId,
+    const newProduct: Product = {
+      id: `product-${Date.now()}`,
+      name: createProductDto.name,
+      description: createProductDto.description ?? null,
+      price: createProductDto.price,
+      image: createProductDto.image ?? null,
+      stripePriceId: createProductDto.stripePriceId ?? null,
+      isFeatured: createProductDto.isFeatured ?? false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
+    
+    this.products.push(newProduct);
+    return newProduct;
   }
 
   async findAll(isFeatured?: boolean): Promise<Product[]> {
-    const products = isFeatured !== undefined
-      ? await this.prisma.product.findMany({
-          where: { isFeatured },
-        })
-      : await this.prisma.product.findMany();
-    
-    // Convert empty strings to null for nullable GraphQL fields
-    return products.map(product => ({
-      ...product,
-      description: product.description === '' ? null : product.description,
-      image: product.image === '' ? null : product.image,
-      stripePriceId: product.stripePriceId === '' ? null : product.stripePriceId,
-    }));
+    if (isFeatured !== undefined) {
+      return this.products.filter(product => product.isFeatured === isFeatured);
+    }
+    return [...this.products];
   }
 
   async findOne(id: string): Promise<Product | null> {
-    const product = await this.prisma.product.findUnique({
-      where: { id },
-    });
-    
-    if (!product) return null;
-    
-    // Convert empty strings to null for nullable GraphQL fields
-    return {
-      ...product,
-      description: product.description === '' ? null : product.description,
-      image: product.image === '' ? null : product.image,
-      stripePriceId: product.stripePriceId === '' ? null : product.stripePriceId,
-    };
+    return this.products.find(product => product.id === id) || null;
   }
 
   async searchProducts(term: string): Promise<Product[]> {
     const lowercaseTerm = term.toLowerCase();
-    const products = await this.prisma.product.findMany({
-      where: {
-        OR: [
-          { name: { contains: lowercaseTerm, mode: 'insensitive' } },
-          { description: { contains: lowercaseTerm, mode: 'insensitive' } },
-        ],
-      },
-    });
-    
-    // Convert empty strings to null for nullable GraphQL fields
-    return products.map(product => ({
-      ...product,
-      description: product.description === '' ? null : product.description,
-      image: product.image === '' ? null : product.image,
-      stripePriceId: product.stripePriceId === '' ? null : product.stripePriceId,
-    }));
+    return this.products.filter(product => 
+      product.name.toLowerCase().includes(lowercaseTerm) ||
+      (product.description && product.description.toLowerCase().includes(lowercaseTerm))
+    );
   }
 
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    const updateData: any = {};
+    const productIndex = this.products.findIndex(p => p.id === id);
     
-    if (updateProductDto.name !== undefined) {
-      updateData.name = updateProductDto.name;
-    }
-    if (updateProductDto.description !== undefined) {
-      updateData.description = updateProductDto.description ?? '';
-    }
-    if (updateProductDto.price !== undefined) {
-      updateData.price = updateProductDto.price;
-    }
-    if (updateProductDto.image !== undefined) {
-      updateData.image = updateProductDto.image ?? '';
-    }
-    if (updateProductDto.stripePriceId !== undefined) {
-      updateData.stripePriceId = updateProductDto.stripePriceId ?? '';
-    }
-    if (updateProductDto.isFeatured !== undefined) {
-      updateData.isFeatured = updateProductDto.isFeatured;
+    if (productIndex === -1) {
+      throw new Error(`Product with id ${id} not found`);
     }
 
-    const updated = await this.prisma.product.update({
-      where: { id },
-      data: updateData,
-    });
+    const product = this.products[productIndex];
     
-    // Convert empty strings to null for nullable GraphQL fields
-    return {
-      ...updated,
-      description: updated.description === '' ? null : updated.description,
-      image: updated.image === '' ? null : updated.image,
-      stripePriceId: updated.stripePriceId === '' ? null : updated.stripePriceId,
-    };
+    if (updateProductDto.name !== undefined) {
+      product.name = updateProductDto.name;
+    }
+    if (updateProductDto.description !== undefined) {
+      product.description = updateProductDto.description ?? null;
+    }
+    if (updateProductDto.price !== undefined) {
+      product.price = updateProductDto.price;
+    }
+    if (updateProductDto.image !== undefined) {
+      product.image = updateProductDto.image ?? null;
+    }
+    if (updateProductDto.stripePriceId !== undefined) {
+      product.stripePriceId = updateProductDto.stripePriceId ?? null;
+    }
+    if (updateProductDto.isFeatured !== undefined) {
+      product.isFeatured = updateProductDto.isFeatured;
+    }
+    
+    product.updatedAt = new Date();
+    
+    return product;
   }
 
   async remove(id: string): Promise<Product> {
-    const deleted = await this.prisma.product.delete({
-      where: { id },
-    });
+    const productIndex = this.products.findIndex(p => p.id === id);
     
-    // Convert empty strings to null for nullable GraphQL fields
-    return {
-      ...deleted,
-      description: deleted.description === '' ? null : deleted.description,
-      image: deleted.image === '' ? null : deleted.image,
-      stripePriceId: deleted.stripePriceId === '' ? null : deleted.stripePriceId,
-    };
+    if (productIndex === -1) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+
+    const deleted = this.products[productIndex];
+    this.products.splice(productIndex, 1);
+    
+    return deleted;
   }
 }
 

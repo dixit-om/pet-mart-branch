@@ -5,27 +5,27 @@ export class Product {
   @Field(() => ID)
   id: string;
 
-  @Field()
+  @Field(() => String)
   name: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description: string | null;
 
   @Field(() => Float)
   price: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   image: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   stripePriceId: string | null;
 
-  @Field()
+  @Field(() => Boolean)
   isFeatured: boolean;
 
-  @Field()
+  @Field(() => Date)
   createdAt: Date;
 
-  @Field()
+  @Field(() => Date)
   updatedAt: Date;
 }

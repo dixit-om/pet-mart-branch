@@ -1,0 +1,86 @@
+import { Product } from './product.model';
+
+// Sample products data - in-memory store
+export const sampleProducts: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>[] = [
+  {
+    name: 'Wholesome Dog Food',
+    description: 'Nutritious and balanced kibble for adult dogs.',
+    price: 29.99,
+    image: 'products/dog-food.jpg',
+    stripePriceId: 'price_xxxxx_dogfood',
+    isFeatured: false,
+  },
+  {
+    name: 'Plush Squeaky Toy',
+    description: 'Durable and fun plush toy for dogs of all sizes.',
+    price: 12.99,
+    image: 'products/squeaky-toy.jpg',
+    stripePriceId: 'price_xxxxx_toy',
+    isFeatured: true,
+  },
+  {
+    name: 'Catnip Cat Toy',
+    description: 'Organic catnip filled toy for playful cats.',
+    price: 5.99,
+    image: 'products/catnip-cat-toy.jpg',
+    stripePriceId: 'price_xxxxx_catnip',
+    isFeatured: false,
+  },
+  {
+    name: 'Comfortable Cat Bed',
+    description: 'Soft and cozy bed for a purrfect nap.',
+    price: 19.99,
+    image: 'products/cat-bed.jpg',
+    stripePriceId: 'price_xxxxx_catbed',
+    isFeatured: false,
+  },
+  {
+    name: 'Aquarium Starter Kit',
+    description: 'Everything you need to set up a freshwater aquarium.',
+    price: 49.99,
+    image: 'products/aquarium-kit.jpg',
+    stripePriceId: 'price_xxxxx_aquarium',
+    isFeatured: false,
+  },
+  {
+    name: 'Bird Cage with Stand',
+    description: 'Spacious cage for small to medium-sized birds.',
+    price: 79.99,
+    image: 'products/bird-cage.jpg',
+    stripePriceId: 'price_xxxxx_birdcage',
+    isFeatured: true,
+  },
+  {
+    name: 'Hamster Wheel',
+    description: 'Quiet and smooth-running exercise wheel for hamsters.',
+    price: 8.99,
+    image: 'products/hamster-wheel.jpg',
+    stripePriceId: 'price_xxxxx_hamsterwheel',
+    isFeatured: false,
+  },
+  {
+    name: 'Premium Dog Leash',
+    description: 'Strong and comfortable leash for daily walks.',
+    price: 15.99,
+    image: 'products/dog-leash.jpg',
+    stripePriceId: 'price_xxxxx_leash',
+    isFeatured: false,
+  },
+  {
+    name: 'Dog Treats',
+    description: 'Tasty and healthy treats for dogs.',
+    price: 9.99,
+    image: 'products/dog-treats.jpg',
+    stripePriceId: 'price_xxxxx_treats',
+    isFeatured: false,
+  },
+  {
+    name: 'Cat Grooming Brush',
+    description: 'Removes loose hair and prevents mats.',
+    price: 14.99,
+    image: 'products/cat-grooming-brush.jpg',
+    stripePriceId: 'price_xxxxx_brush',
+    isFeatured: false,
+  },
+];
+

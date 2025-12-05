@@ -3,11 +3,11 @@ import { Field, InputType, Float } from '@nestjs/graphql';
 
 @InputType()
 export class CreateProductDto {
-  @Field()
+  @Field(() => String)
   @IsString()
   name: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   description?: string | null;
@@ -16,17 +16,17 @@ export class CreateProductDto {
   @IsNumber()
   price: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   image?: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   stripePriceId?: string | null;
 
-  @Field({ nullable: true, defaultValue: false })
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
   @IsBoolean()
   @IsOptional()
   isFeatured?: boolean;

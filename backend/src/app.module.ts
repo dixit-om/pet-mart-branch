@@ -4,9 +4,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
-import { OrdersModule } from './orders/orders.module';
+// Temporarily removed OrdersModule - it still uses Prisma
+// import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -18,9 +18,8 @@ import { OrdersModule } from './orders/orders.module';
       path: '/graphql',
       playground: true,
     }),
-    PrismaModule,
     ProductsModule,
-    OrdersModule,
+    // OrdersModule, // Temporarily disabled - needs Prisma removal
   ],
   controllers: [AppController],
   providers: [AppService],

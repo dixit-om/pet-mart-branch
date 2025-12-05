@@ -20,6 +20,19 @@ const GET_PRODUCTS = gql`
   }
 `;
 
+const SEARCH_PRODUCTS = gql`
+  query SearchProducts($term: String!) {
+    searchProducts(term: $term) {
+      id
+      name
+      description
+      price
+      image
+      stripePriceId
+    }
+  }
+`;
+
 export interface Product {
   id: string;
   name: string;
@@ -104,6 +117,61 @@ export const ProductStore = signalStore(
             });
           },
         });
+    },
+    searchProducts(searchTerm: string) {
+      // If search term is empty, load all products
+      if (!searchTerm || searchTerm.trim() === '') {
+        this.loadProducts();
+        return;
+      }
+
+      patchState(store, { loading: true, error: null });
+
+      apollo
+        .query<{ searchProducts: Product[] }>({
+          query: SEARCH_PRODUCTS,
+          variables: { term: searchTerm },
+          errorPolicy: 'all',
+        })
+        .pipe(
+          tap({
+            next: (result) => {
+              // Check for error property (network errors)
+              if (result.error) {
+                console.error('Apollo search error:', result.error);
+                patchState(store, {
+                  error: result.error.message || 'Failed to search products',
+                  loading: false,
+                });
+                return;
+              }
+
+              const products = (result.data?.searchProducts ?? []).filter(
+                (p): p is Product => !!p
+              );
+
+              console.log('Search results:', products.length, products);
+
+              patchState(store, {
+                products,
+                loading: false,
+                error: null,
+              });
+            },
+            error: (error) => {
+              console.error('Apollo search error:', error);
+              const errorMessage = error?.graphQLErrors?.[0]?.message || 
+                                   error?.networkError?.message || 
+                                   error?.message || 
+                                   'Failed to search products';
+              patchState(store, {
+                error: errorMessage,
+                loading: false,
+              });
+            },
+          })
+        )
+        .subscribe();
     },
   }))
 );

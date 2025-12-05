@@ -2,48 +2,49 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Product {
-  id: ID!
-  name: String!
+input CreateProductDto {
   description: String
-  price: Float!
   image: String
+  isFeatured: Boolean = false
+  name: String!
+  price: Float!
   stripePriceId: String
-  isFeatured: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createProduct(createProductInput: CreateProductDto!): Product!
+  removeProduct(id: ID!): Product!
+  updateProduct(id: ID!, updateProductInput: UpdateProductDto!): Product!
+}
+
+type Product {
   createdAt: DateTime!
+  description: String
+  id: ID!
+  image: String
+  isFeatured: Boolean!
+  name: String!
+  price: Float!
+  stripePriceId: String
   updatedAt: DateTime!
 }
 
 type Query {
-  products(isFeatured: Boolean): [Product!]!
   product(id: ID!): Product
+  products(isFeatured: Boolean): [Product!]!
   searchProducts(term: String!): [Product!]!
 }
 
-type Mutation {
-  createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(id: ID!, updateProductInput: UpdateProductInput!): Product!
-  removeProduct(id: ID!): Product!
-}
-
-input CreateProductInput {
-  name: String!
+input UpdateProductDto {
   description: String
-  price: Float!
   image: String
-  stripePriceId: String
   isFeatured: Boolean
-}
-
-input UpdateProductInput {
   name: String
-  description: String
   price: Float
-  image: String
   stripePriceId: String
-  isFeatured: Boolean
 }
-
-scalar DateTime
-
-
