@@ -1,26 +1,45 @@
-import { ApplicationConfig, provideZoneChangeDetection, inject } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideZoneChangeDetection,
+} from '@angular/core';
+
 import { provideRouter } from '@angular/router';
 
-import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { appRoutes } from './app.routes';
+
+import {
+  provideClientHydration,
+  withEventReplay,
+} from '@angular/platform-browser';
+
 import { provideApollo } from 'apollo-angular';
+
 import { HttpLink } from 'apollo-angular/http';
-import { InMemoryCache } from '@apollo/client';
+
+import { InMemoryCache } from '@apollo/client/cache';
+
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideHttpClient(),
     provideApollo(() => {
       const httpLink = inject(HttpLink);
-
       return {
-        link: httpLink.create({
+        link: httpLink.create({ 
           uri: 'http://localhost:3000/graphql',
         }),
         cache: new InMemoryCache(),
+        defaultOptions: {
+          watchQuery: {
+            errorPolicy: 'all',
+          },
+        },
       };
     }),
+    provideHttpClient(withFetch()),
+    provideClientHydration(withEventReplay()),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(appRoutes),
   ],
 };

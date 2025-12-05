@@ -7,21 +7,24 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsString()
-  description: string;
+  @IsOptional()
+  description?: string | null;
 
   @Field(() => Float)
   @IsNumber()
   price: number;
 
-  @Field()
+  @Field({ nullable: true })
   @IsString()
-  image: string;
+  @IsOptional()
+  image?: string | null;
 
-  @Field()
+  @Field({ nullable: true })
   @IsString()
-  stripePriceId: string;
+  @IsOptional()
+  stripePriceId?: string | null;
 
   @Field({ nullable: true, defaultValue: false })
   @IsBoolean()

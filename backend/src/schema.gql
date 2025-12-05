@@ -3,30 +3,47 @@
 # ------------------------------------------------------
 
 type Product {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  image: String
+  stripePriceId: String
+  isFeatured: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Query {
-  products: [Product!]!
-  product(id: Int!): Product!
+  products(isFeatured: Boolean): [Product!]!
+  product(id: ID!): Product
+  searchProducts(term: String!): [Product!]!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(updateProductInput: UpdateProductInput!): Product!
-  removeProduct(id: Int!): Product!
+  updateProduct(id: ID!, updateProductInput: UpdateProductInput!): Product!
+  removeProduct(id: ID!): Product!
 }
 
 input CreateProductInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  name: String!
+  description: String
+  price: Float!
+  image: String
+  stripePriceId: String
+  isFeatured: Boolean
 }
 
 input UpdateProductInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  name: String
+  description: String
+  price: Float
+  image: String
+  stripePriceId: String
+  isFeatured: Boolean
 }
+
+scalar DateTime
 
 

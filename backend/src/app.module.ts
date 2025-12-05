@@ -15,6 +15,8 @@ import { OrdersModule } from './orders/orders.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       introspection: true,
+      path: '/graphql',
+      playground: true,
     }),
     PrismaModule,
     ProductsModule,

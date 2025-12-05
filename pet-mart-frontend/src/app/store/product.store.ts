@@ -50,32 +50,60 @@ export const ProductStore = signalStore(
   withState(initialState),
   withMethods((store, apollo = inject(Apollo)) => ({
     loadProducts() {
-      patchState(store, { loading: true });
+      patchState(store, { loading: true, error: null });
 
       apollo
         .watchQuery<{ products: Product[] }>({
           query: GET_PRODUCTS,
+          errorPolicy: 'all',
         })
         .valueChanges.pipe(
           tap({
-            next: ({ data }) => {
-              const products = (data?.products ?? []).filter(
+            next: (result) => {
+              // Check for error property (network errors)
+              if (result.error) {
+                console.error('Apollo error:', result.error);
+                patchState(store, {
+                  error: result.error.message || 'Failed to load products',
+                  loading: false,
+                });
+                return;
+              }
+
+              const products = (result.data?.products ?? []).filter(
                 (p): p is Product => !!p
               );
+
+              console.log('Products loaded:', products.length, products);
 
               patchState(store, {
                 products,
                 loading: false,
+                error: null,
               });
             },
-            error: (error) =>
+            error: (error) => {
+              console.error('Apollo error:', error);
+              const errorMessage = error?.graphQLErrors?.[0]?.message || 
+                                   error?.networkError?.message || 
+                                   error?.message || 
+                                   'Failed to load products';
               patchState(store, {
-                error: error.message,
+                error: errorMessage,
                 loading: false,
-              }),
+              });
+            },
           })
         )
-        .subscribe();
+        .subscribe({
+          error: (error) => {
+            console.error('Subscription error:', error);
+            patchState(store, {
+              error: error.message || 'Failed to load products',
+              loading: false,
+            });
+          },
+        });
     },
   }))
 );
