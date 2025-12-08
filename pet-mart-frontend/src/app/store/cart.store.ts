@@ -15,6 +15,7 @@ export const CartStore = signalStore({
 withState(initialState),
 withComputed((store) => ({
     totalItems: computed(() => store.items().reduce((acc, item) => { return acc + item.quantity; }, 0)),
+    totalAmount: computed(() => store.items().reduce((acc, item) => { return acc + (item.price * item.quantity); }, 0)),
 })),
 withMethods((store) => ({
     addToCart(product: Product, quantity: number = 1) {
@@ -34,6 +35,25 @@ withMethods((store) => ({
                 items: [...currentItems, { ...product, quantity }]
             });
         }
+    },
+    updateQuantity(productId: string, quantity: number) {
+        if (quantity < 1) return;
+        const currentItems = store.items();
+        const updatedItems = currentItems.map((cartItem) => {
+            if (cartItem.id === productId) {
+                return { ...cartItem, quantity };
+            }
+            return cartItem;
+        });
+        patchState(store, { items: updatedItems });
+    },
+    removeFromCart(productId: string) {
+        const currentItems = store.items();
+        const updatedItems = currentItems.filter(cartItem => cartItem.id !== productId);
+        patchState(store, { items: updatedItems });
+    },
+    clearCart() {
+        patchState(store, { items: [] });
     }
 }))
 );
