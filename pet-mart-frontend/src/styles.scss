@@ -5,4 +5,11 @@
 
 html, body {
   @apply bg-base-100 text-base-content;
+  height: 100%;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
