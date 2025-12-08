@@ -5,6 +5,7 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
+import { PaymentModule } from './payment/payment.module';
 // Temporarily removed OrdersModule - it still uses Prisma
 // import { OrdersModule } from './orders/orders.module';
 
@@ -19,6 +20,7 @@ import { ProductsModule } from './products/products.module';
       playground: true,
     }),
     ProductsModule,
+    PaymentModule,
     // OrdersModule, // Temporarily disabled - needs Prisma removal
   ],
   controllers: [AppController],

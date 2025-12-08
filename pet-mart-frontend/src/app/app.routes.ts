@@ -23,4 +23,11 @@ export const appRoutes: Routes = [
       return mod.CardComponent;
     },
   },
+  {
+    path: 'checkout',
+    loadComponent: async () => {
+      const mod = await import('./checkout/checkout.component');
+      return mod.CheckoutComponent;
+    },
+  },
 ];
