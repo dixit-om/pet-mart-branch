@@ -88,7 +88,7 @@ export class PaymentService {
       const totalAmount = session.amount_total ? session.amount_total / 100 : 0;
 
       // Create order in database
-      const order = await this.prisma.order.create({
+      const order = await this.prisma.client.order.create({
         data: {
           paymentId: session.payment_intent as string,
           totalAmount,
@@ -97,7 +97,7 @@ export class PaymentService {
             create: await Promise.all(
               lineItems.map(async (lineItem) => {
                 // Get product by stripePriceId
-                const product = await this.prisma.product.findFirst({
+                const product = await this.prisma.client.product.findFirst({
                   where: {
                     stripePriceId: lineItem.price?.id || '',
                   },

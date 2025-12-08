@@ -27,6 +27,6 @@ export class HeaderComponent {
       }
       this.previousCount = currentCount;
 
-  })
-}
+    }, { allowSignalWrites: true });
+  }
 }

@@ -98,7 +98,7 @@ withHooks({
         effect(() => {
             const items = store.items();
             saveCartToLocalStorage(items);
-        });
+        }, { allowSignalWrites: true });
     }
 })
 );
