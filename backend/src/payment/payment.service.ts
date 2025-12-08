@@ -3,6 +3,8 @@ import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrdersService } from '../orders/orders.service';
 
+type CheckoutSession = Awaited<ReturnType<Stripe['checkout']['sessions']['retrieve']>>;
+
 @Injectable()
 export class PaymentService {
   private stripe: Stripe;
@@ -16,7 +18,7 @@ export class PaymentService {
       throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
     }
     this.stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2025-11-17.clover',
     });
   }
 
@@ -64,7 +66,11 @@ export class PaymentService {
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
-        const session = event.data.object as Stripe.Checkout.Session;
+        // Retrieve the full session object to get proper typing
+        const sessionId = (event.data.object as { id: string }).id;
+        const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+          expand: ['line_items'],
+        });
         await this.handleCheckoutCompleted(session);
         break;
       default:
@@ -74,17 +80,9 @@ export class PaymentService {
     return { received: true };
   }
 
-  private async handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  private async handleCheckoutCompleted(session: CheckoutSession) {
     try {
-      // Retrieve the session with line items
-      const sessionWithLineItems = await this.stripe.checkout.sessions.retrieve(
-        session.id,
-        {
-          expand: ['line_items'],
-        }
-      );
-
-      const lineItems = sessionWithLineItems.line_items?.data || [];
+      const lineItems = session.line_items?.data || [];
       
       // Calculate total amount
       const totalAmount = session.amount_total ? session.amount_total / 100 : 0;
