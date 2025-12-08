@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Product } from '../../store/product.store';
 
 @Component({
@@ -10,4 +10,10 @@ import { Product } from '../../store/product.store';
 })
 export class ProductCardComponent {
   product = input.required<Product>();
+
+  addToCart = output<Product>();
+  onAddToCart(product: Product) {
+    this.addToCart.emit(product);
+  }
+
 }

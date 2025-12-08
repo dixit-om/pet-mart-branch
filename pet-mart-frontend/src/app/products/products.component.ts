@@ -1,6 +1,7 @@
 import { Component, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProductStore } from '../store/product.store';
+import { Product, ProductStore } from '../store/product.store';
+import { CartStore } from '../store/cart.store';
 import { ProductCardComponent } from '../components/product-card/product-card.component';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -13,8 +14,9 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
   styleUrl: './products.component.scss'
 })
 export class ProductsComponent {
-  inputValue = ''; // Value bound to input field
+  searchTerm = ''; // Value bound to input field
   productStore = inject(ProductStore);
+  cartStore = inject(CartStore);
   private destroyRef = inject(DestroyRef);
   private searchProducts$ = new Subject<string>();
 
@@ -40,7 +42,10 @@ export class ProductsComponent {
 
   onSearch(value: string) {
     console.log('⌨️ User typed:', value, '- Emitting to Subject');
-    this.inputValue = value; // Update input immediately for UI responsiveness
+    this.searchTerm = value; // Update input immediately for UI responsiveness
     this.searchProducts$.next(value); // Emit to debounced stream (API call happens after debounce)
+  }
+  addToCart(product: Product) {
+    this.cartStore.addToCart(product);
   }
 }
