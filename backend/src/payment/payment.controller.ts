@@ -6,12 +6,15 @@ import Stripe from 'stripe';
 
 @Controller('payment')
 export class PaymentController {
-  private stripe: Stripe;
+  private stripe: Stripe | null = null;
 
   constructor(private readonly paymentService: PaymentService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2025-11-17.clover',
-    });
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (stripeKey) {
+      this.stripe = new Stripe(stripeKey, {
+        apiVersion: '2025-11-17.clover',
+      });
+    }
   }
 
   @Post('webhook')
@@ -20,6 +23,10 @@ export class PaymentController {
     @Headers('stripe-signature') signature: string,
     @Res() res: Response,
   ) {
+    if (!this.stripe) {
+      return res.status(400).send('Stripe is not configured');
+    }
+
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (!webhookSecret) {

@@ -26,9 +26,21 @@ export class OrdersService {
       const orderId = order.id;
 
       // Create order items
-      const orderItems = [];
+      const orderItems: Array<{
+        id: string;
+        orderId: string;
+        productId: string;
+        quantity: number;
+        price: number;
+      }> = [];
       for (const item of items) {
-        const itemResult = await client.query(
+        const itemResult = await client.query<{
+          id: string;
+          orderId: string;
+          productId: string;
+          quantity: number;
+          price: number;
+        }>(
           `INSERT INTO "OrderItem" (id, "orderId", "productId", quantity, price)
            VALUES (gen_random_uuid(), $1, $2, $3, $4)
            RETURNING *`,
@@ -48,7 +60,7 @@ export class OrdersService {
       // Map products to order items
       const itemsWithProducts = orderItems.map(item => ({
         ...item,
-        product: products.find(p => p.id === item.productId),
+        product: products.find((p: { id: string }) => p.id === item.productId),
       }));
 
       await client.query('COMMIT');

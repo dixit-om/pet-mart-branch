@@ -2,6 +2,34 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CheckoutItemInput {
+  priceId: String!
+  quantity: Float!
+}
+
+type CheckoutSession {
+  sessionId: String!
+  url: String!
+}
+
+input CreateCheckoutSessionInput {
+  cancelUrl: String!
+  items: [CheckoutItemInput!]!
+  orderId: String!
+  successUrl: String!
+}
+
+input CreateOrderInput {
+  price: Float!
+  productId: String!
+  quantity: Int!
+}
+
+input CreateOrderItemsInput {
+  items: [CreateOrderInput!]!
+  totalAmount: Float!
+}
+
 input CreateProductDto {
   description: String
   image: String
@@ -17,9 +45,30 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Mutation {
+  createCheckoutSession(input: CreateCheckoutSessionInput!): CheckoutSession!
+  createOrder(createOrderInput: CreateOrderItemsInput!): Order!
   createProduct(createProductInput: CreateProductDto!): Product!
   removeProduct(id: ID!): Product!
   updateProduct(id: ID!, updateProductInput: UpdateProductDto!): Product!
+}
+
+type Order {
+  createdAt: DateTime!
+  id: ID!
+  items: [OrderItem!]!
+  paymentId: String
+  status: String!
+  totalAmount: Float!
+  updatedAt: DateTime!
+}
+
+type OrderItem {
+  id: String!
+  orderId: String!
+  price: Float!
+  product: Product!
+  productId: String!
+  quantity: Int!
 }
 
 type Product {
@@ -35,6 +84,7 @@ type Product {
 }
 
 type Query {
+  orders: [Order!]!
   product(id: ID!): Product
   products(isFeatured: Boolean): [Product!]!
   searchProducts(term: String!): [Product!]!

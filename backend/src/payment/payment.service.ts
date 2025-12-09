@@ -5,15 +5,23 @@ import { OrderStatus } from '../orders/enums/order-status.enum';
 
 @Injectable()
 export class PaymentService {
-  private stripe: Stripe;
+  private stripe: Stripe | null = null;
 
   constructor(private db: DatabaseService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2025-11-17.clover',
-    });
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (stripeKey) {
+      this.stripe = new Stripe(stripeKey, {
+        apiVersion: '2025-11-17.clover',
+      });
+    } else {
+      console.warn('⚠️  STRIPE_SECRET_KEY not set. Payment features will be disabled.');
+    }
   }
 
   async createCheckoutSession(orderId: string, items: Array<{ priceId: string; quantity: number }>, successUrl: string, cancelUrl: string) {
+    if (!this.stripe) {
+      throw new Error('Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.');
+    }
     try {
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
