@@ -6,10 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { PaymentModule } from './payment/payment.module';
-// Temporarily removed OrdersModule - it still uses Prisma
-// import { OrdersModule } from './orders/orders.module';
-import { CheckoutModule } from './resource/checkout/checkout.module';
-import { OrdersModule } from './resource/orders/orders.module';
+import { CheckoutModule } from './checkout/checkout.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -25,7 +23,6 @@ import { OrdersModule } from './resource/orders/orders.module';
     PaymentModule,
     CheckoutModule,
     OrdersModule,
-    // OrdersModule, // Temporarily disabled - needs Prisma removal
   ],
   controllers: [AppController],
   providers: [AppService],
