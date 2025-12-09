@@ -7,18 +7,27 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   constructor() {
     // Only create pool if DATABASE_URL is provided
-    if (process.env.DATABASE_URL) {
+    const databaseUrl = process.env.DATABASE_URL?.trim();
+    if (databaseUrl) {
       this.pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: databaseUrl,
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       });
+    } else {
+      console.warn('⚠️  DATABASE_URL is not set or is empty. Database features will be disabled.');
     }
   }
 
   async onModuleInit() {
     // Test connection only if DATABASE_URL is provided
-    if (!process.env.DATABASE_URL) {
+    const databaseUrl = process.env.DATABASE_URL?.trim();
+    if (!databaseUrl) {
       console.warn('⚠️  DATABASE_URL not set. Database features will be disabled.');
+      console.warn('   Make sure your .env file is in the backend directory and contains: DATABASE_URL=postgresql://...');
+      return;
+    }
+    
+    if (!this.pool) {
       return;
     }
     

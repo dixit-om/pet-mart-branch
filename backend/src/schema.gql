@@ -84,6 +84,7 @@ type Product {
 }
 
 type Query {
+  order(id: String!): Order!
   orders: [Order!]!
   product(id: ID!): Product
   products(isFeatured: Boolean): [Product!]!

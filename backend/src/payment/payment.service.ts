@@ -51,13 +51,56 @@ export class PaymentService {
       const session = event.data.object as Stripe.Checkout.Session;
       const orderId = session.metadata?.orderId;
 
-      if (orderId) {
-        await this.db.query(
-          `UPDATE "Order" 
-           SET status = $1, "paymentId" = $2, "updatedAt" = NOW()
-           WHERE id = $3`,
-          [OrderStatus.STARTED_DELIVERY, session.payment_intent as string, orderId]
-        );
+      try {
+        if (orderId) {
+          // Update existing order
+          await this.db.query(
+            `UPDATE "Order" 
+             SET status = $1, "paymentId" = $2, "updatedAt" = NOW()
+             WHERE id = $3`,
+            [OrderStatus.STARTED_DELIVERY, session.payment_intent as string, orderId]
+          );
+        } else if (session.metadata?.items && session.metadata?.totalAmount) {
+          // Create order from metadata (when database wasn't available during checkout)
+          const items = JSON.parse(session.metadata.items);
+          const totalAmount = parseFloat(session.metadata.totalAmount);
+          const client = await this.db.getClient();
+
+          try {
+            await client.query('BEGIN');
+
+            // Create order
+            const orderResult = await client.query(
+              `INSERT INTO "Order" (id, "totalAmount", status, "createdAt", "updatedAt", "paymentId")
+               VALUES (gen_random_uuid(), $1, $2, NOW(), NOW(), $3)
+               RETURNING *`,
+              [totalAmount, OrderStatus.STARTED_DELIVERY, session.payment_intent as string]
+            );
+
+            const order = orderResult.rows[0];
+            const newOrderId = order.id;
+
+            // Create order items
+            for (const item of items) {
+              await client.query(
+                `INSERT INTO "OrderItem" (id, "orderId", "productId", quantity, price)
+                 VALUES (gen_random_uuid(), $1, $2, $3, $4)`,
+                [newOrderId, item.productId, item.quantity, item.price]
+              );
+            }
+
+            await client.query('COMMIT');
+            console.log(`✅ Created order ${newOrderId} from checkout session ${session.id}`);
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally {
+            client.release();
+          }
+        }
+      } catch (error: any) {
+        // Log error but don't fail the webhook
+        console.error('Error processing checkout webhook:', error);
       }
     }
 

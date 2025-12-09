@@ -9,6 +9,21 @@ export class OrdersService {
 
   async createOrder(createOrderInput: CreateOrderItemsInput) {
     const { items, totalAmount } = createOrderInput;
+    
+    // Validate required fields
+    if (!items || items.length === 0) {
+      throw new Error('Order must have at least one item');
+    }
+    
+    if (totalAmount === null || totalAmount === undefined || isNaN(Number(totalAmount))) {
+      throw new Error('totalAmount is required and must be a valid number');
+    }
+    
+    const totalAmountNum = Number(totalAmount);
+    if (totalAmountNum <= 0) {
+      throw new Error('totalAmount must be greater than 0');
+    }
+    
     const client = await this.db.getClient();
 
     try {
@@ -19,11 +34,28 @@ export class OrdersService {
         `INSERT INTO "Order" (id, "totalAmount", status, "createdAt", "updatedAt")
          VALUES (gen_random_uuid(), $1, $2, NOW(), NOW())
          RETURNING *`,
-        [totalAmount, OrderStatus.PENDING]
+        [totalAmountNum, OrderStatus.PENDING]
       );
 
       const order = orderResult.rows[0];
       const orderId = order.id;
+
+      // Validate that all products exist in the database before creating order items
+      const productIds = items.map(item => item.productId);
+      const productCheckResult = await client.query(
+        `SELECT id FROM "Product" WHERE id = ANY($1)`,
+        [productIds]
+      );
+      const existingProductIds = new Set(productCheckResult.rows.map((row: { id: string }) => row.id));
+      const missingProductIds = productIds.filter(id => !existingProductIds.has(id));
+      
+      if (missingProductIds.length > 0) {
+        await client.query('ROLLBACK');
+        throw new Error(
+          `The following product IDs do not exist in the database: ${missingProductIds.join(', ')}. ` +
+          `Please ensure products are synced to the database before creating orders.`
+        );
+      }
 
       // Create order items
       const orderItems: Array<{
@@ -49,8 +81,7 @@ export class OrdersService {
         orderItems.push(itemResult.rows[0]);
       }
 
-      // Fetch products for order items
-      const productIds = items.map(item => item.productId);
+      // Fetch products for order items (reuse productIds from validation above)
       const productResult = await client.query(
         `SELECT * FROM "Product" WHERE id = ANY($1)`,
         [productIds]
@@ -108,5 +139,39 @@ export class OrdersService {
        ORDER BY o."createdAt" DESC`
     );
     return result.rows;
+  }
+
+  async findOne(id: string) {
+    const result = await this.db.query(
+      `SELECT o.*, 
+        json_agg(
+          json_build_object(
+            'id', oi.id,
+            'quantity', oi.quantity,
+            'price', oi.price,
+            'productId', oi."productId",
+            'orderId', oi."orderId",
+            'product', (
+              SELECT json_build_object(
+                'id', p.id,
+                'name', p.name,
+                'description', p.description,
+                'price', p.price,
+                'image', p.image,
+                'stripePriceId', p."stripePriceId",
+                'isFeatured', p."isFeatured"
+              )
+              FROM "Product" p
+              WHERE p.id = oi."productId"
+            )
+          )
+        ) as items
+       FROM "Order" o
+       LEFT JOIN "OrderItem" oi ON o.id = oi."orderId"
+       WHERE o.id = $1
+       GROUP BY o.id`,
+      [id]
+    );
+    return result.rows[0] || null;
   }
 }

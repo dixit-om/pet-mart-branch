@@ -18,6 +18,8 @@ import { OrdersModule } from './orders/orders.module';
       introspection: true,
       path: '/graphql',
       playground: true,
+      validationRules: [],
+      context: ({ req, res }) => ({ req, res }),
     }),
     ProductsModule,
     PaymentModule,
