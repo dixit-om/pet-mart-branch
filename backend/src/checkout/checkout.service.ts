@@ -11,9 +11,9 @@ export class CheckoutService {
 
   private getStripe(): Stripe {
     if (!this.stripe) {
-      const stripeSecret = process.env.STRIPE_SECRET_KEY;
+      const stripeSecret = process.env.STRIPE_SECRET;
       if (!stripeSecret) {
-        throw new Error('Missing Stripe Secret. Please set STRIPE_SECRET_KEY environment variable.');
+        throw new Error('Missing Stripe Secret. Please set STRIPE_SECRET environment variable.');
       }
       this.stripe = new Stripe(stripeSecret, {
         apiVersion: '2025-11-17.clover',
@@ -28,7 +28,7 @@ export class CheckoutService {
     try {
       const order = await this.ordersService.createOrder({
         items: createCheckoutDto.items.map(item => ({
-          productId: item.priceId,
+          productId: item.priceId, // priceId in DTO is the product ID
           quantity: item.quantity,
           price: item.price,
         })),
@@ -44,7 +44,7 @@ export class CheckoutService {
     // Prepare order data for metadata (in case we need to create order in webhook)
     const orderData = {
       items: JSON.stringify(createCheckoutDto.items.map(item => ({
-        productId: item.priceId,
+        productId: item.priceId, // priceId in DTO is the product ID
         quantity: item.quantity,
         price: item.price,
       }))),
@@ -63,15 +63,19 @@ export class CheckoutService {
         quantity: item.quantity,
       })),
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout/cancel`,
+      success_url: `${process.env.FRONTEND_URL}/checkout/success?orderID=${orderId}`,
+      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
       metadata: {
         ...(orderId ? { orderId } : {}),
         ...orderData,
       },
     });
 
-    return session;
+    return {
+      sessionId: session.id,
+      url: session.url,
+      orderId: orderId,
+    };
   }
 
 }

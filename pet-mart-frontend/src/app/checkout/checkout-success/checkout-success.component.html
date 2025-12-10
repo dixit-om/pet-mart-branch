@@ -1,0 +1,56 @@
+<div class="max-w-2xl mx-auto py-8 space-y-8">
+  @if (loading) {
+    <div class="text-center">
+      <span class="loading loading-spinner loading-lg"></span>
+      <p class="mt-4">Loading order details...</p>
+    </div>
+  } @else if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+    </div>
+    <div class="text-center">
+      <a routerLink="/" class="btn btn-primary">Return Home</a>
+    </div>
+  } @else if (order) {
+    <div class="text-center space-y-4">
+      <div class="text-6xl text-success">✓</div>
+      <h1 class="text-3xl font-bold text-success">Payment Successful!</h1>
+      <p class="text-gray-300">
+        Thank you for your purchase. Your order has been confirmed.
+      </p>
+    </div>
+
+    <div class="card bg-base-100">
+      <div class="card-body">
+        <p class="text-sm mb-4">Order ID: {{ order.id }}</p>
+        <h2 class="card-title">Order Summary</h2>
+        <div class="space-y-4 mt-4">
+          @for (item of order.items; track item.id) {
+            <div class="flex justify-between items-center border-b pb-4">
+              <div class="flex items-center gap-4">
+                @if (item.product.image) {
+                  <img [src]="item.product.image" [alt]="item.product.name" class="w-16 h-16 object-cover rounded" />
+                }
+                <div>
+                  <p class="font-semibold">{{ item.product.name }}</p>
+                  <p class="text-sm text-gray-400">Quantity: {{ item.quantity }}</p>
+                </div>
+              </div>
+              <p class="font-semibold">${{ (item.price * item.quantity).toFixed(2) }}</p>
+            </div>
+          }
+          <div class="divider"></div>
+          <div class="flex justify-between items-center font-bold text-lg">
+            <p>Total</p>
+            <p>${{ order.totalAmount.toFixed(2) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center space-y-4">
+      <p>We'll send you a confirmation email with your order details.</p>
+      <a routerLink="/" class="btn btn-primary">Continue Shopping</a>
+    </div>
+  }
+</div>
