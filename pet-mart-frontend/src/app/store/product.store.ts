@@ -1,10 +1,11 @@
-import { inject } from '@angular/core';
+import { inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 
 import { Apollo, gql } from 'apollo-angular';
 
-import { tap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, tap } from 'rxjs';
 
 
 const GET_PRODUCTS = gql`
@@ -79,8 +80,12 @@ export const ProductStore = signalStore(
     providedIn: 'root',
   },
   withState(initialState),
-  withMethods((store, apollo = inject(Apollo)) => ({
-    loadProducts() {
+  withMethods((store, apollo = inject(Apollo), destroyRef = inject(DestroyRef)) => {
+    // Subject for debounced search
+    const searchSubject$ = new Subject<string>();
+
+    // Helper function to load all products
+    const loadAllProducts = () => {
       patchState(store, { loading: true, error: null });
 
       apollo
@@ -135,11 +140,17 @@ export const ProductStore = signalStore(
             });
           },
         });
-    },
-    searchProducts(searchTerm: string) {
+    };
+
+    // Setup debounced search subscription
+    searchSubject$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntilDestroyed(destroyRef)
+    ).subscribe((searchTerm: string) => {
       // If search term is empty, load all products
       if (!searchTerm || searchTerm.trim() === '') {
-        this.loadProducts();
+        loadAllProducts();
         return;
       }
 
@@ -190,8 +201,18 @@ export const ProductStore = signalStore(
           })
         )
         .subscribe();
-    },
-  }))
+    });
+
+    return {
+      loadProducts() {
+        loadAllProducts();
+      },
+      searchProducts(searchTerm: string) {
+        // Push to debounced subject - actual search happens after debounce
+        searchSubject$.next(searchTerm);
+      },
+    };
+  })
 );
 
 
