@@ -110,8 +110,6 @@ export const ProductStore = signalStore(
                 (p): p is Product => !!p
               );
 
-              console.log('Products loaded:', products.length, products);
-
               patchState(store, {
                 products,
                 loading: false,
@@ -178,8 +176,6 @@ export const ProductStore = signalStore(
               const products = (result.data?.searchProducts ?? []).filter(
                 (p): p is Product => !!p
               );
-
-              console.log('Search results:', products.length, products);
 
               patchState(store, {
                 products,

@@ -90,7 +90,6 @@ export class PaymentService {
             }
 
             await client.query('COMMIT');
-            console.log(`✅ Created order ${newOrderId} from checkout session ${session.id}`);
           } catch (error) {
             await client.query('ROLLBACK');
             throw error;

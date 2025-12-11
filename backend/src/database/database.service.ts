@@ -33,7 +33,6 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     
     try {
       await this.pool.query('SELECT NOW()');
-      console.log('✅ Database connected successfully');
     } catch (error) {
       console.error('❌ Database connection failed:', error);
       // Don't throw - allow server to start without database

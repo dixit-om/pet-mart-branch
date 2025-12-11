@@ -19,7 +19,6 @@ export class ProductsService implements OnModuleInit {
       createdAt: new Date(),
       updatedAt: new Date(),
     }));
-    console.log(`✅ Loaded ${this.products.length} products into memory`);
     
     // Sync products to database if database is available
     await this.syncProductsToDatabase();
@@ -62,11 +61,7 @@ export class ProductsService implements OnModuleInit {
         }
       }
 
-      if (syncedCount > 0) {
-        console.log(`✅ Synced ${syncedCount} products to database`);
-      } else {
-        console.log(`✅ All products already exist in database`);
-      }
+      // Products synced to database
     } catch (error) {
       console.warn('⚠️  Failed to sync products to database:', error instanceof Error ? error.message : error);
       console.warn('   Products will only be available in-memory.');

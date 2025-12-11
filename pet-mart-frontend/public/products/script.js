@@ -17,7 +17,4 @@ fs.readdir(folderPath, (err, files) => {
       path.extname(file).toLowerCase()
     );
   });
-
-  // Log the names of the image files
-  console.log("Image files:", imageFiles);
 });
