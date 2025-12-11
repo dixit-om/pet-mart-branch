@@ -1,7 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CartStore } from '../../../store/cart.store';
-import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-header',

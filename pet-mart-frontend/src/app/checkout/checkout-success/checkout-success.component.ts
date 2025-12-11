@@ -1,6 +1,6 @@
 import { afterNextRender, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderStore } from '../../store/order.store';
 import { OrderDetailComponent } from '../../orders/components/order-detail/order-detail.component';
 import { CartStore } from '../../store/cart.store';
