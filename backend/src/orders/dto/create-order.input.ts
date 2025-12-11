@@ -33,7 +33,4 @@ export class CreateOrderItemsInput {
   @Min(0.01)
   @IsNotEmpty()
   totalAmount!: number;
-
-  // @Field(() => String)
-  // token!: string;
 }
