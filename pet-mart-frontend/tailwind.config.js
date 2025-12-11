@@ -14,36 +14,36 @@ module.exports = {
     themes: [
       {
         petmart: {
-          // Primary: Orange (#FF9B00) - Main actions, header, primary buttons
-          "primary": "#FF9B00",
-          "primary-content": "#FFFFFF", // White text for better contrast on orange
+          // Primary: Bright Orange (#FF6600) - Main actions, header, primary buttons
+          "primary": "#FF6600",
+          "primary-content": "#FFFFFF", // White text for optimal contrast on orange
           
-          // Secondary: Bright Yellow (#FFE100) - Cards, secondary backgrounds
-          "secondary": "#FFE100",
-          "secondary-content": "#1a1a1a", // Dark text on yellow
+          // Secondary: Golden Yellow (#F1C550) - Cards, secondary backgrounds
+          "secondary": "#F1C550",
+          "secondary-content": "#1a1a1a", // Dark text on golden yellow for readability
           
-          // Accent: Golden Yellow (#FFC900) - Highlights, badges, accents
-          "accent": "#FFC900",
-          "accent-content": "#1a1a1a", // Dark text on golden yellow
+          // Accent: Red (#CE2525) - Important accents, highlights
+          "accent": "#CE2525",
+          "accent-content": "#FFFFFF", // White text on red for contrast
           
           // Neutral: Darker orange for footer and contrast elements
-          "neutral": "#E67E00", // Slightly darker orange
+          "neutral": "#CC5200", // Darker shade of orange for footer
           "neutral-content": "#FFFFFF", // White text on dark orange
           
-          // Base colors: Light cream (#EBE389) for main background
-          "base-100": "#EBE389", // Main background - light cream
-          "base-200": "#FFE100", // Cards and elevated surfaces - bright yellow
-          "base-300": "#FFC900", // Subtle backgrounds - golden yellow
+          // Base colors: Very light cream (#FFF9E0) for main background
+          "base-100": "#FFF9E0", // Main background - very light cream
+          "base-200": "#F1C550", // Cards and elevated surfaces - golden yellow
+          "base-300": "#FFE8B3", // Subtle backgrounds - lighter golden yellow
           "base-content": "#1a1a1a", // Dark text on light backgrounds
           
-          // Status colors
-          "info": "#FFE100", // Yellow for info
+          // Status colors following UI/UX best practices
+          "info": "#F1C550", // Golden yellow for info
           "info-content": "#1a1a1a",
-          "success": "#FFC900", // Golden for success
+          "success": "#F1C550", // Golden yellow for success (positive)
           "success-content": "#1a1a1a",
-          "warning": "#FF9B00", // Orange for warnings
+          "warning": "#FF6600", // Orange for warnings
           "warning-content": "#FFFFFF",
-          "error": "#D32F2F", // Red for errors (better visibility)
+          "error": "#CE2525", // Red for errors
           "error-content": "#FFFFFF",
         },
       },
