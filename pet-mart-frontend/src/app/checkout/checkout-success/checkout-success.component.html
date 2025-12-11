@@ -16,11 +16,9 @@
     <div class="card-body">
       <p class="text-sm mb-4">Order ID: {{ orderStore.orderDetail()?.id }}</p>
       <h2 class="card-title">Order Summary</h2>
-      <div class="space-y-4">
-        <!-- @defer (on immediate; hydrate never) {
-        <app-order-details [order]="orderStore.orderDetail()" />
-        } -->
-      </div>
+      @defer (on immediate; hydrate never) {
+        <app-order-detail [order]="orderStore.orderDetail()" />}
+      
     </div>
   </div>
 

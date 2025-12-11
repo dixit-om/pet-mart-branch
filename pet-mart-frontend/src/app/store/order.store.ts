@@ -25,11 +25,11 @@ const GET_ORDERS = gql`
    }
 `;
 
-type OrderItemWithProduct = OrderItem & {
+export type OrderItemWithProduct = OrderItem & {
   product: Product;
 };
 
-type OrderWithItems = Order & {
+export type OrderWithItems = Order & {
   items: OrderItemWithProduct[];
   error: string | null;
 };
