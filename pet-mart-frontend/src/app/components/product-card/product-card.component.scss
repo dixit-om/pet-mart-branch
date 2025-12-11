@@ -1,2 +1,38 @@
-
-
+.card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 201, 0, 0.2); // Subtle border with golden yellow
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(255, 155, 0, 0.3), 
+                0 10px 10px -5px rgba(255, 155, 0, 0.2);
+    border-color: rgba(255, 201, 0, 0.4);
+  }
+  
+  .card-title {
+    color: #1a1a1a;
+    font-weight: 700;
+  }
+  
+  .card-body p {
+    color: #4a4a4a;
+    line-height: 1.6;
+  }
+  
+  .card-actions {
+    .btn-primary {
+      font-weight: 600;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 155, 0, 0.4);
+      }
+    }
+  }
+  
+  span {
+    color: #1a1a1a;
+    font-weight: 700;
+  }
+}

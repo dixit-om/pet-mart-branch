@@ -10,7 +10,7 @@
           </div>
           <div>
             <h3 class="font-semibold">{{ item.product.name }}</h3>
-            <span class="text-sm text-gray-300">Quantity: {{ item.quantity }}</span>
+            <span class="text-sm text-base-content opacity-70">Quantity: {{ item.quantity }}</span>
           </div>
         </div>
         <span class="font-semibold"
@@ -25,7 +25,7 @@
       <span>${{ order()!.totalAmount | number : "1.2-2" }}</span>
     </div>
     
-    <div class="text-sm text-gray-300">
+    <div class="text-sm text-base-content opacity-70">
       <p>Status: {{ order()!.status }}</p>
       <p>Order Date: {{ order()!.createdAt | date : "medium" }}</p>
     </div>

@@ -43,8 +43,8 @@
     position: absolute;
     top: -4px;
     right: -4px;
-    background-color: #ff4081;
-    color: white;
+    background-color: #FFC900; // Golden yellow for better visibility on orange header
+    color: #1a1a1a; // Dark text for contrast
     border-radius: 50%;
     padding: 2px 6px;
     font-size: 0.875rem;
@@ -54,7 +54,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(255, 201, 0, 0.4);
     transition: transform 0.2s ease;
   
     .cart-bounce & {

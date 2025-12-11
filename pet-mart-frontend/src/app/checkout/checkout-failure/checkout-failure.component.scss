@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, 
+    #FF9B00 0%,      /* Vibrant orange - top stripe */
+    #FF9B00 35%,     /* Continue orange */
+    #FFE100 35%,     /* Bright yellow - second stripe */
+    #FFE100 70%,     /* Continue yellow */
+    #FFC900 70%,     /* Golden yellow - third stripe */
+    #FFC900 85%,     /* Continue golden */
+    #EBE389 85%,     /* Light cream - bottom stripe */
+    #EBE389 100%     /* End with cream */
+  );
+  padding: 2rem 0;
+}
+

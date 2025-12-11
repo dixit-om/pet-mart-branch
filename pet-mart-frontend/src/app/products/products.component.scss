@@ -1,0 +1,15 @@
+input[type="text"] {
+  background-color: #FFF9D6; // Light yellow background for search
+  border-color: #FFC900; // Golden yellow border
+  
+  &:focus {
+    background-color: #FFFFFF;
+    border-color: #FF9B00; // Orange border on focus
+    box-shadow: 0 0 0 3px rgba(255, 155, 0, 0.1);
+  }
+  
+  &::placeholder {
+    color: #666;
+  }
+}
+
