@@ -1,1 +1,150 @@
-<p>home works!</p>
+<!-- Hero Section -->
+<section class="hero min-h-[70vh] bg-gradient-to-br from-primary via-primary to-secondary">
+  <div class="hero-content text-center text-primary-content">
+    <div class="max-w-4xl">
+      <h1 class="mb-6 text-5xl md:text-6xl font-bold">
+        Welcome to Pet E-Mart
+      </h1>
+      <p class="mb-8 text-xl md:text-2xl opacity-90">
+        Your one-stop shop for all your pet's needs. From food to toys, we've got everything to keep your furry, feathered, and scaly friends happy!
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a routerLink="/products" class="btn btn-lg btn-secondary text-secondary-content">
+          Shop Now
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <a routerLink="/products" class="btn btn-lg btn-outline btn-primary-content border-2">
+          Browse Products
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-16 bg-base-200">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-bold text-center mb-12 text-base-content">
+      Shop by Category
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      @for (category of categories; track category.name) {
+        <a 
+          [routerLink]="category.route" 
+          class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+        >
+          <div class="card-body items-center text-center p-6">
+            <div class="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
+              {{ category.icon }}
+            </div>
+            <h3 class="card-title text-lg font-semibold text-base-content">
+              {{ category.name }}
+            </h3>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-16 bg-base-100">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
+      <h2 class="text-3xl sm:text-4xl font-bold text-base-content">
+        Featured Products
+      </h2>
+      <a routerLink="/products" class="btn btn-primary btn-outline whitespace-nowrap">
+        View All Products
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+
+    @if (productStore.loading()) {
+      <div class="flex justify-center items-center py-20">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    } @else if (productStore.error()) {
+      <div class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Error loading products: {{ productStore.error() }}</span>
+      </div>
+    } @else if (featuredProducts.length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (product of featuredProducts; track product.id) {
+          <app-product-card 
+            (addToCart)="addToCart($event)" 
+            [product]="product" 
+          />
+        }
+      </div>
+    } @else {
+      <div class="text-center py-20">
+        <p class="text-xl text-base-content opacity-70">No products available at the moment.</p>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-16 bg-base-200">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-bold text-center mb-12 text-base-content">
+      Why Choose Pet E-Mart?
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body items-center text-center">
+          <div class="text-5xl mb-4">🚚</div>
+          <h3 class="card-title text-xl mb-2">Fast Shipping</h3>
+          <p class="text-base-content opacity-70">
+            Quick and reliable delivery to get your pet supplies when you need them.
+          </p>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body items-center text-center">
+          <div class="text-5xl mb-4">⭐</div>
+          <h3 class="card-title text-xl mb-2">Quality Products</h3>
+          <p class="text-base-content opacity-70">
+            We only stock the best products from trusted brands for your pets.
+          </p>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body items-center text-center">
+          <div class="text-5xl mb-4">💝</div>
+          <h3 class="card-title text-xl mb-2">Pet Care Experts</h3>
+          <p class="text-base-content opacity-70">
+            Our team is passionate about pets and here to help you find the perfect products.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-16 bg-gradient-to-r from-primary to-secondary">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-4xl md:text-5xl font-bold mb-6 text-primary-content">
+      Ready to Shop?
+    </h2>
+    <p class="text-xl mb-8 text-primary-content opacity-90 max-w-2xl mx-auto">
+      Discover our wide range of products for all your pet care needs. From food and toys to accessories and more!
+    </p>
+    <a routerLink="/products" class="btn btn-lg btn-secondary text-secondary-content">
+      Explore Our Products
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </a>
+  </div>
+</section>
