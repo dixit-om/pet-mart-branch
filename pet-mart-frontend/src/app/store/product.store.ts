@@ -42,6 +42,24 @@ export interface Product {
   stripePriceId: string | null;
 }
 
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+}
+
+export interface Order {
+  id: string;
+  totalAmount: number;
+  status: string;
+  paymentId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  items: OrderItem[];
+}
+
 export interface ProductState {
   products: Product[];
   featuredProducts: Product[];
