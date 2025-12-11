@@ -51,31 +51,68 @@ export class CheckoutService {
       totalAmount: createCheckoutDto.totalAmount.toString(),
     };
 
-    const session = await this.getStripe().checkout.sessions.create({
-      line_items: createCheckoutDto.items.map(item => ({
+    const lineItems = createCheckoutDto.items.map(item => {
+      // If stripePriceId exists and is a valid Stripe price ID (not a placeholder), use it
+      // Valid Stripe price IDs start with "price_" and don't contain placeholder text like "xxxxx"
+      const isValidStripePriceId = 
+        item.stripePriceId && 
+        item.stripePriceId.trim() !== '' &&
+        item.stripePriceId.startsWith('price_') &&
+        !item.stripePriceId.includes('xxxxx');
+      
+      if (isValidStripePriceId) {
+        return {
+          price: item.stripePriceId,
+          quantity: item.quantity,
+        };
+      }
+      
+      // Otherwise, create a new price on the fly
+      // Ensure name is not empty and price is valid
+      if (!item.name || item.name.trim() === '') {
+        throw new Error(`Product name is required for item with priceId: ${item.priceId}`);
+      }
+      if (!item.price || item.price <= 0) {
+        throw new Error(`Invalid price for item: ${item.name}`);
+      }
+      
+      const lineItem = {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: item.name,
+            name: item.name.trim(),
           },
           unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity,
-      })),
-      mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/checkout/success?orderID=${orderId}`,
-      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
-      metadata: {
-        ...(orderId ? { orderId } : {}),
-        ...orderData,
-      },
+      };
+      
+      return lineItem;
     });
 
-    return {
-      sessionId: session.id,
-      url: session.url,
-      orderId: orderId,
-    };
+    try {
+      const session = await this.getStripe().checkout.sessions.create({
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `${process.env.FRONTEND_URL}/checkout/success?orderID=${orderId}`,
+        cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
+        metadata: {
+          ...(orderId ? { orderId } : {}),
+          ...orderData,
+        },
+      });
+      
+      return {
+        sessionId: session.id,
+        url: session.url,
+        orderId: orderId,
+      };
+    } catch (error: any) {
+      console.error('Stripe checkout session creation error:', error);
+      console.error('Line items being sent:', JSON.stringify(lineItems, null, 2));
+      console.error('Error details:', error?.raw || error);
+      throw new Error(`Failed to create Stripe checkout session: ${error?.message || 'Unknown error'}`);
+    }
   }
 
 }

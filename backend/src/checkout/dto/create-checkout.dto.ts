@@ -3,6 +3,7 @@ import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
 
 
 export class CardItemDto {
+    @IsString()
     priceId: string;
 
     @IsNumber()
@@ -11,7 +12,10 @@ export class CardItemDto {
     @IsNumber()
     price: number;
 
+    @IsString()
     name: string;
+    
+    @IsString()
     stripePriceId: string;
 }
 

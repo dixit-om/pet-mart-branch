@@ -31,7 +31,6 @@ export type OrderItemWithProduct = OrderItem & {
 
 export type OrderWithItems = Order & {
   items: OrderItemWithProduct[];
-  error: string | null;
 };
 
 type OrderState = {
