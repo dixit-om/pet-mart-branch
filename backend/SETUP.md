@@ -58,20 +58,7 @@ You can use free PostgreSQL services:
 
 After creating a database, copy the connection string and set it as `DATABASE_URL`.
 
-### Running Migrations
-
-After setting up your database:
-
-```bash
-# Generate Prisma Client
-npx prisma generate
-
-# Run migrations
-npx prisma migrate deploy
-
-# (Optional) Populate with sample products
-npx ts-node prisma/populate-db.ts
-```
+The application uses raw PostgreSQL queries via the `pg` library. Make sure your database schema matches the expected structure (Product, Order, OrderItem tables).
 
 ## Stripe Setup
 
