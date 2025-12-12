@@ -8,19 +8,19 @@ export class PaymentService {
   private stripe: Stripe | null = null;
 
   constructor(private db: DatabaseService) {
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const stripeKey = process.env.STRIPE_SECRET;
     if (stripeKey) {
       this.stripe = new Stripe(stripeKey, {
         apiVersion: '2025-11-17.clover',
       });
     } else {
-      console.warn('⚠️  STRIPE_SECRET_KEY not set. Payment features will be disabled.');
+      console.warn('⚠️  STRIPE_SECRET not set. Payment features will be disabled.');
     }
   }
 
   async createCheckoutSession(orderId: string, items: Array<{ priceId: string; quantity: number }>, successUrl: string, cancelUrl: string) {
     if (!this.stripe) {
-      throw new Error('Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.');
+      throw new Error('Stripe is not configured. Please set STRIPE_SECRET environment variable.');
     }
     try {
       const session = await this.stripe.checkout.sessions.create({

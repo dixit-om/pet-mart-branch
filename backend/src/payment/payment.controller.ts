@@ -9,7 +9,7 @@ export class PaymentController {
   private stripe: Stripe | null = null;
 
   constructor(private readonly paymentService: PaymentService) {
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const stripeKey = process.env.STRIPE_SECRET;
     if (stripeKey) {
       this.stripe = new Stripe(stripeKey, {
         apiVersion: '2025-11-17.clover',
